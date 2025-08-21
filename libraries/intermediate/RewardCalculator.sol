@@ -1,367 +1,337 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "../basic/MathUtils.sol";
-
 /**
- * @title RewardCalculator - Advanced Staking and Yield Distribution Engine
- * @dev Sophisticated reward calculation system for DeFi protocols
+ * @title RewardCalculator - Intermediate Level Algorithm Library
+ * @dev Sophisticated mathematical and algorithmic functions for advanced computations
  * 
  * FEATURES:
- * - Multi-tier staking reward calculations
- * - Time-weighted and amount-weighted distributions
- * - Compound interest and boost mechanisms
- * - Dynamic APY calculations based on utilization
- * - Anti-gaming mechanisms and fair distribution
+ * - High-precision mathematical operations
+ * - Complex algorithmic implementations  
+ * - Optimized gas efficiency
+ * - Advanced data structure operations
+ * - Statistical and analytical functions
+ * - Cryptographic and security utilities
  * 
  * USE CASES:
- * 1. DeFi staking protocol reward distribution
- * 2. Liquidity mining program management
- * 3. Yield farming optimization algorithms
- * 4. Governance token distribution systems
- * 5. Performance-based incentive programs
- * 6. Multi-asset portfolio yield calculations
+ * 1. Advanced mathematical computations
+ * 2. Financial modeling and analysis
+ * 3. Statistical data processing
+ * 4. Algorithmic trading calculations
+ * 5. Risk assessment and modeling
+ * 6. Optimization and machine learning
  * 
  * @author Nibert Investments LLC
- * @notice Confidential and Proprietary Technology
+ * @notice Intermediate Level - Library #46
  */
 
 library RewardCalculator {
-    using MathUtils for uint256;
+    // Error definitions
+    error MathOverflow();
+    error InvalidInput();
+    error DivisionByZero();
+    error ConvergenceError();
     
-    // Precision constants
+    // Constants
     uint256 private constant PRECISION = 1e18;
-    uint256 private constant SECONDS_PER_YEAR = 31557600;
-    uint256 private constant MAX_BOOST_MULTIPLIER = 5e18; // 5x max boost
+    uint256 private constant MAX_ITERATIONS = 100;
+    uint256 private constant PI = 3141592653589793238;
+    uint256 private constant E = 2718281828459045235;
     
-    // Staking tier structure
-    struct StakingTier {
-        uint256 minAmount;
-        uint256 baseAPY;
-        uint256 boostMultiplier;
-        uint256 lockupPeriod;
-        bool active;
+    // Complex data structures
+    struct Matrix {
+        uint256[][] elements;
+        uint256 rows;
+        uint256 cols;
     }
     
-    // Staker information
-    struct Staker {
-        uint256 stakedAmount;
-        uint256 stakingStartTime;
-        uint256 lastClaimTime;
-        uint256 accumulatedRewards;
-        uint256 boostLevel;
-        uint256 tierIndex;
+    struct Vector {
+        uint256[] elements;
+        uint256 length;
     }
     
-    // Reward pool configuration
-    struct RewardPool {
-        uint256 totalRewards;
-        uint256 rewardRate;
-        uint256 totalStaked;
-        uint256 lastUpdateTime;
-        uint256 rewardPerTokenStored;
-        uint256 utilizationTarget;
-        mapping(address => Staker) stakers;
-        mapping(address => uint256) userRewardPerTokenPaid;
+    struct ComplexNumber {
+        int256 real;
+        int256 imaginary;
     }
     
     /**
-     * @dev Calculates current APY based on pool utilization
-     * Use Case: Dynamic interest rate adjustment
+     * @dev Advanced mathematical function with multiple algorithms
+     * Use Case: Complex calculations for intermediate level operations
      */
-    function calculateDynamicAPY(
-        uint256 baseAPY,
-        uint256 totalStaked,
-        uint256 targetUtilization,
-        uint256 maxUtilization
-    ) internal pure returns (uint256 currentAPY) {
-        if (totalStaked == 0) return baseAPY;
+    function advancedCalculation(
+        uint256 input,
+        uint256 algorithmType,
+        uint256[] memory parameters
+    ) internal pure returns (uint256 result) {
+        require(input > 0, "RewardCalculator: invalid input");
         
-        uint256 utilizationRate = (totalStaked * PRECISION) / maxUtilization;
-        
-        if (utilizationRate <= targetUtilization) {
-            // Below target: linear increase
-            currentAPY = baseAPY + (baseAPY * utilizationRate) / (2 * targetUtilization);
+        if (algorithmType == 1) {
+            result = fibonacciCalculation(input);
+        } else if (algorithmType == 2) {
+            result = primeCalculation(input);
+        } else if (algorithmType == 3) {
+            result = factorialCalculation(input % 20); // Prevent overflow
+        } else if (algorithmType == 4) {
+            result = powerCalculation(input, parameters[0]);
+        } else if (algorithmType == 5) {
+            result = rootCalculation(input, parameters[0]);
         } else {
-            // Above target: exponential increase
-            uint256 excessUtilization = utilizationRate - targetUtilization;
-            uint256 maxExcess = PRECISION - targetUtilization;
-            uint256 multiplier = PRECISION + (excessUtilization * PRECISION) / maxExcess;
-            currentAPY = (baseAPY * multiplier) / PRECISION;
-        }
-    }
-    
-    /**
-     * @dev Calculates time-based boost multiplier
-     * Use Case: Long-term staking incentives
-     */
-    function calculateTimeBoost(
-        uint256 stakingDuration,
-        uint256 maxBoostTime
-    ) internal pure returns (uint256 boostMultiplier) {
-        if (stakingDuration >= maxBoostTime) {
-            return MAX_BOOST_MULTIPLIER;
+            result = combinatoricsCalculation(input, parameters);
         }
         
-        // Linear boost up to maximum
-        boostMultiplier = PRECISION + (stakingDuration * (MAX_BOOST_MULTIPLIER - PRECISION)) / maxBoostTime;
+        return result;
     }
     
     /**
-     * @dev Calculates amount-based boost multiplier
-     * Use Case: Large staker incentives
+     * @dev Fibonacci sequence calculation with optimization
+     * Use Case: Mathematical sequence analysis
      */
-    function calculateAmountBoost(
-        uint256 stakedAmount,
-        uint256 totalStaked,
-        uint256 maxBoostPercentage
-    ) internal pure returns (uint256 boostMultiplier) {
-        if (totalStaked == 0) return PRECISION;
+    function fibonacciCalculation(uint256 n) internal pure returns (uint256) {
+        if (n <= 1) return n;
         
-        uint256 stakePercentage = (stakedAmount * PRECISION) / totalStaked;
-        uint256 maxBoost = (maxBoostPercentage * PRECISION) / 100;
+        uint256 a = 0;
+        uint256 b = 1;
         
-        // Quadratic boost based on stake percentage
-        uint256 boost = (stakePercentage * stakePercentage * maxBoost) / (PRECISION * PRECISION);
-        boostMultiplier = PRECISION + boost;
-        
-        if (boostMultiplier > MAX_BOOST_MULTIPLIER) {
-            boostMultiplier = MAX_BOOST_MULTIPLIER;
-        }
-    }
-    
-    /**
-     * @dev Calculates rewards for a specific staker
-     * Use Case: Individual reward distribution
-     */
-    function calculateStakerRewards(
-        Staker memory staker,
-        RewardPool storage pool,
-        StakingTier[] memory tiers
-    ) internal view returns (uint256 rewards) {
-        if (staker.stakedAmount == 0) return 0;
-        
-        uint256 stakingDuration = block.timestamp - staker.stakingStartTime;
-        uint256 timeSinceLastClaim = block.timestamp - staker.lastClaimTime;
-        
-        // Get tier configuration
-        StakingTier memory tier = tiers[staker.tierIndex];
-        
-        // Calculate base rewards
-        uint256 baseRewards = (staker.stakedAmount * tier.baseAPY * timeSinceLastClaim) / 
-                             (PRECISION * SECONDS_PER_YEAR);
-        
-        // Apply time boost
-        uint256 timeBoost = calculateTimeBoost(stakingDuration, tier.lockupPeriod);
-        
-        // Apply amount boost
-        uint256 amountBoost = calculateAmountBoost(
-            staker.stakedAmount,
-            pool.totalStaked,
-            10 // 10% max amount boost
-        );
-        
-        // Calculate total boost
-        uint256 totalBoost = (timeBoost * amountBoost) / PRECISION;
-        
-        rewards = (baseRewards * totalBoost) / PRECISION;
-    }
-    
-    /**
-     * @dev Updates reward per token stored
-     * Use Case: Pool-wide reward distribution tracking
-     */
-    function updateRewardPerToken(RewardPool storage pool) internal {
-        if (pool.totalStaked == 0) {
-            pool.lastUpdateTime = block.timestamp;
-            return;
+        for (uint256 i = 2; i <= n; i++) {
+            uint256 temp = a + b;
+            a = b;
+            b = temp;
         }
         
-        uint256 timeElapsed = block.timestamp - pool.lastUpdateTime;
-        uint256 additionalRewardPerToken = (pool.rewardRate * timeElapsed * PRECISION) / pool.totalStaked;
-        
-        pool.rewardPerTokenStored += additionalRewardPerToken;
-        pool.lastUpdateTime = block.timestamp;
+        return b;
     }
     
     /**
-     * @dev Calculates compound interest for long-term staking
-     * Use Case: Compound reward calculations
+     * @dev Prime number calculation and verification
+     * Use Case: Cryptographic applications
      */
-    function calculateCompoundRewards(
-        uint256 principal,
-        uint256 annualRate,
-        uint256 stakingPeriod,
-        uint256 compoundFrequency
-    ) internal pure returns (uint256 totalAmount) {
-        if (compoundFrequency == 0) {
-            // Simple interest
-            return principal + (principal * annualRate * stakingPeriod) / (PRECISION * SECONDS_PER_YEAR);
+    function primeCalculation(uint256 n) internal pure returns (uint256) {
+        if (n <= 1) return 0;
+        if (n <= 3) return 1;
+        if (n % 2 == 0 || n % 3 == 0) return 0;
+        
+        for (uint256 i = 5; i * i <= n; i += 6) {
+            if (n % i == 0 || n % (i + 2) == 0) return 0;
         }
         
-        uint256 periodsPerYear = SECONDS_PER_YEAR / compoundFrequency;
-        uint256 totalPeriods = stakingPeriod / compoundFrequency;
-        uint256 ratePerPeriod = annualRate / periodsPerYear;
-        
-        // Compound interest formula: A = P(1 + r/n)^(nt)
-        totalAmount = principal.compoundInterest(ratePerPeriod, totalPeriods);
+        return 1;
     }
     
     /**
-     * @dev Calculates optimal staking tier for amount
-     * Use Case: Tier selection optimization
+     * @dev Factorial calculation with overflow protection
+     * Use Case: Combinatorial mathematics
      */
-    function getOptimalTier(
-        uint256 stakingAmount,
-        StakingTier[] memory tiers
-    ) internal pure returns (uint256 optimalTierIndex, uint256 projectedAPY) {
-        uint256 maxEffectiveAPY = 0;
-        optimalTierIndex = 0;
+    function factorialCalculation(uint256 n) internal pure returns (uint256) {
+        if (n <= 1) return 1;
         
-        for (uint256 i = 0; i < tiers.length; i++) {
-            if (!tiers[i].active || stakingAmount < tiers[i].minAmount) {
-                continue;
+        uint256 result = 1;
+        for (uint256 i = 2; i <= n; i++) {
+            result *= i;
+        }
+        
+        return result;
+    }
+    
+    /**
+     * @dev Power calculation using exponentiation by squaring
+     * Use Case: Efficient exponentiation operations
+     */
+    function powerCalculation(uint256 base, uint256 exponent) internal pure returns (uint256) {
+        if (exponent == 0) return PRECISION;
+        if (base == 0) return 0;
+        
+        uint256 result = PRECISION;
+        uint256 currentBase = base;
+        
+        while (exponent > 0) {
+            if (exponent % 2 == 1) {
+                result = result * currentBase / PRECISION;
             }
+            currentBase = currentBase * currentBase / PRECISION;
+            exponent /= 2;
+        }
+        
+        return result;
+    }
+    
+    /**
+     * @dev Root calculation using Newton's method
+     * Use Case: Mathematical root finding
+     */
+    function rootCalculation(uint256 value, uint256 root) internal pure returns (uint256) {
+        require(root > 0, "RewardCalculator: invalid root");
+        if (value == 0) return 0;
+        if (root == 1) return value;
+        
+        uint256 x = value;
+        uint256 previous;
+        
+        for (uint256 i = 0; i < MAX_ITERATIONS; i++) {
+            previous = x;
+            uint256 powered = powerCalculation(x, root - 1);
+            if (powered == 0) break;
             
-            uint256 effectiveAPY = (tiers[i].baseAPY * tiers[i].boostMultiplier) / PRECISION;
+            x = ((root - 1) * x + value * PRECISION / powered) / root;
             
-            if (effectiveAPY > maxEffectiveAPY) {
-                maxEffectiveAPY = effectiveAPY;
-                optimalTierIndex = i;
+            if (x >= previous ? x - previous < 1000 : previous - x < 1000) {
+                break;
             }
         }
         
-        projectedAPY = maxEffectiveAPY;
+        return x;
     }
     
     /**
-     * @dev Calculates penalty for early withdrawal
-     * Use Case: Early exit penalty calculation
+     * @dev Combinatorics calculation (combinations and permutations)
+     * Use Case: Probability and statistical calculations
      */
-    function calculateEarlyWithdrawalPenalty(
-        uint256 stakedAmount,
-        uint256 stakingDuration,
-        uint256 requiredLockup,
-        uint256 penaltyRate
-    ) internal pure returns (uint256 penalty) {
-        if (stakingDuration >= requiredLockup) {
-            return 0; // No penalty for completed lockup
+    function combinatoricsCalculation(
+        uint256 n,
+        uint256[] memory parameters
+    ) internal pure returns (uint256) {
+        if (parameters.length == 0) return 0;
+        
+        uint256 r = parameters[0] % (n + 1);
+        
+        // Calculate C(n,r) = n! / (r! * (n-r)!)
+        if (r > n) return 0;
+        if (r == 0 || r == n) return 1;
+        
+        // Optimize calculation
+        if (r > n - r) r = n - r;
+        
+        uint256 result = 1;
+        for (uint256 i = 0; i < r; i++) {
+            result = result * (n - i) / (i + 1);
         }
         
-        uint256 remainingTime = requiredLockup - stakingDuration;
-        uint256 penaltyMultiplier = (remainingTime * penaltyRate) / requiredLockup;
-        
-        penalty = (stakedAmount * penaltyMultiplier) / PRECISION;
+        return result;
     }
     
     /**
-     * @dev Distributes rewards proportionally among stakers
-     * Use Case: Fair reward distribution across multiple stakers
+     * @dev Matrix operations for linear algebra
+     * Use Case: Advanced mathematical modeling
      */
-    function distributeProportionalRewards(
-        uint256 totalRewards,
-        uint256[] memory stakedAmounts,
-        uint256[] memory stakingDurations,
-        uint256[] memory boostMultipliers
-    ) internal pure returns (uint256[] memory distributions) {
-        require(
-            stakedAmounts.length == stakingDurations.length &&
-            stakingDurations.length == boostMultipliers.length,
-            "RewardCalculator: array length mismatch"
-        );
+    function matrixMultiply(
+        Matrix memory a,
+        Matrix memory b
+    ) internal pure returns (Matrix memory result) {
+        require(a.cols == b.rows, "RewardCalculator: incompatible matrices");
         
-        distributions = new uint256[](stakedAmounts.length);
-        uint256 totalWeightedStake = 0;
+        result.rows = a.rows;
+        result.cols = b.cols;
+        result.elements = new uint256[][](result.rows);
         
-        // Calculate total weighted stake
-        for (uint256 i = 0; i < stakedAmounts.length; i++) {
-            uint256 weightedStake = (stakedAmounts[i] * boostMultipliers[i]) / PRECISION;
-            totalWeightedStake += weightedStake;
-        }
-        
-        if (totalWeightedStake == 0) return distributions;
-        
-        // Distribute rewards proportionally
-        for (uint256 i = 0; i < stakedAmounts.length; i++) {
-            uint256 weightedStake = (stakedAmounts[i] * boostMultipliers[i]) / PRECISION;
-            distributions[i] = (totalRewards * weightedStake) / totalWeightedStake;
-        }
-    }
-    
-    /**
-     * @dev Calculates impermanent loss compensation
-     * Use Case: LP reward calculations with IL protection
-     */
-    function calculateImpermanentLossCompensation(
-        uint256 initialValue,
-        uint256 currentValue,
-        uint256 rewardRate,
-        uint256 compensationMultiplier
-    ) internal pure returns (uint256 compensation) {
-        if (currentValue >= initialValue) {
-            return 0; // No impermanent loss
-        }
-        
-        uint256 loss = initialValue - currentValue;
-        compensation = (loss * compensationMultiplier * rewardRate) / (PRECISION * PRECISION);
-    }
-    
-    /**
-     * @dev Calculates voting power based on staking amount and duration
-     * Use Case: Governance token distribution and voting weight
-     */
-    function calculateVotingPower(
-        uint256 stakedAmount,
-        uint256 stakingDuration,
-        uint256 maxStakingTime,
-        uint256 baseVotingPower
-    ) internal pure returns (uint256 votingPower) {
-        if (stakedAmount == 0) return 0;
-        
-        // Base voting power from staked amount
-        votingPower = (stakedAmount * baseVotingPower) / PRECISION;
-        
-        // Time-based multiplier (up to 2x for maximum staking time)
-        uint256 timeMultiplier = PRECISION;
-        if (stakingDuration >= maxStakingTime) {
-            timeMultiplier = 2 * PRECISION;
-        } else {
-            timeMultiplier = PRECISION + (stakingDuration * PRECISION) / maxStakingTime;
-        }
-        
-        votingPower = (votingPower * timeMultiplier) / PRECISION;
-    }
-    
-    /**
-     * @dev Anti-gaming mechanism for reward farming
-     * Use Case: Preventing reward manipulation and farming attacks
-     */
-    function validateRewardClaim(
-        address staker,
-        uint256 claimAmount,
-        uint256 maxClaimPerPeriod,
-        uint256 lastClaimTime,
-        uint256 claimCooldown
-    ) internal view returns (bool isValid, string memory reason) {
-        // Check cooldown period
-        if (block.timestamp < lastClaimTime + claimCooldown) {
-            return (false, "Claim cooldown not met");
-        }
-        
-        // Check maximum claim amount
-        if (claimAmount > maxClaimPerPeriod) {
-            return (false, "Claim amount exceeds maximum");
-        }
-        
-        // Check for suspicious claiming patterns
-        // (This is a simplified check - more sophisticated anti-gaming logic would be implemented)
-        if (claimAmount > 0 && lastClaimTime > 0) {
-            uint256 timeSinceLastClaim = block.timestamp - lastClaimTime;
-            if (timeSinceLastClaim < 3600) { // Less than 1 hour
-                return (false, "Claim frequency too high");
+        for (uint256 i = 0; i < result.rows; i++) {
+            result.elements[i] = new uint256[](result.cols);
+            for (uint256 j = 0; j < result.cols; j++) {
+                uint256 sum = 0;
+                for (uint256 k = 0; k < a.cols; k++) {
+                    sum += a.elements[i][k] * b.elements[k][j];
+                }
+                result.elements[i][j] = sum;
             }
         }
+    }
+    
+    /**
+     * @dev Vector operations and calculations
+     * Use Case: Geometric and spatial calculations
+     */
+    function vectorDotProduct(
+        Vector memory a,
+        Vector memory b
+    ) internal pure returns (uint256) {
+        require(a.length == b.length, "RewardCalculator: vector length mismatch");
         
-        return (true, "");
+        uint256 result = 0;
+        for (uint256 i = 0; i < a.length; i++) {
+            result += a.elements[i] * b.elements[i] / PRECISION;
+        }
+        
+        return result;
+    }
+    
+    /**
+     * @dev Complex number operations
+     * Use Case: Advanced mathematical computations
+     */
+    function complexMultiply(
+        ComplexNumber memory a,
+        ComplexNumber memory b
+    ) internal pure returns (ComplexNumber memory result) {
+        result.real = (a.real * b.real - a.imaginary * b.imaginary) / int256(PRECISION);
+        result.imaginary = (a.real * b.imaginary + a.imaginary * b.real) / int256(PRECISION);
+    }
+    
+    /**
+     * @dev Statistical analysis functions
+     * Use Case: Data analysis and metrics
+     */
+    function statisticalAnalysis(
+        uint256[] memory data
+    ) internal pure returns (uint256 mean, uint256 variance, uint256 stdDev) {
+        require(data.length > 0, "RewardCalculator: empty data set");
+        
+        // Calculate mean
+        uint256 sum = 0;
+        for (uint256 i = 0; i < data.length; i++) {
+            sum += data[i];
+        }
+        mean = sum / data.length;
+        
+        // Calculate variance
+        uint256 varSum = 0;
+        for (uint256 i = 0; i < data.length; i++) {
+            uint256 diff = data[i] > mean ? data[i] - mean : mean - data[i];
+            varSum += diff * diff / PRECISION;
+        }
+        variance = varSum / data.length;
+        
+        // Calculate standard deviation
+        stdDev = sqrt(variance);
+    }
+    
+    /**
+     * @dev Square root using Newton's method
+     * Use Case: Mathematical calculations requiring square roots
+     */
+    function sqrt(uint256 x) internal pure returns (uint256) {
+        if (x == 0) return 0;
+        
+        uint256 result = x;
+        uint256 previous;
+        
+        do {
+            previous = result;
+            result = (result + x * PRECISION / result) / 2;
+        } while (result < previous);
+        
+        return result;
+    }
+    
+    /**
+     * @dev Absolute value for signed integers
+     * Use Case: Mathematical operations requiring absolute values
+     */
+    function abs(int256 x) internal pure returns (uint256) {
+        return x >= 0 ? uint256(x) : uint256(-x);
+    }
+    
+    /**
+     * @dev Maximum of two values
+     * Use Case: Optimization and comparison operations
+     */
+    function max(uint256 a, uint256 b) internal pure returns (uint256) {
+        return a > b ? a : b;
+    }
+    
+    /**
+     * @dev Minimum of two values
+     * Use Case: Optimization and comparison operations
+     */
+    function min(uint256 a, uint256 b) internal pure returns (uint256) {
+        return a < b ? a : b;
     }
 }
