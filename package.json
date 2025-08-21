@@ -1,13 +1,42 @@
 {
   "name": "web3",
   "version": "1.0.0",
-  "description": "This is the repository for all of Nibert Investmenst Web3 products",
+  "description": "This is the repository for all of Nibert Investments Web3 products",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "test": "npx hardhat test",
+    "start": "node server.js",
+    "compile": "npx hardhat compile",
+    "deploy": "npx hardhat run scripts/deploy.js",
+    "node": "npx hardhat node",
+    "console": "npx hardhat console",
+    "verify": "npx hardhat verify",
+    "coverage": "npx hardhat coverage",
+    "size": "npx hardhat size-contracts",
+    "clean": "npx hardhat clean",
+    "deploy-localhost": "npx hardhat run scripts/deploy.js --network localhost",
+    "deploy-sepolia": "npx hardhat run scripts/deploy.js --network sepolia",
+    "deploy-polygon": "npx hardhat run scripts/deploy.js --network polygon",
+    "start-node": "npx hardhat node --hostname 0.0.0.0",
+    "fork-mainnet": "npx hardhat node --fork https://eth-mainnet.alchemyapi.io/v2/demo"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "keywords": [
+    "blockchain",
+    "ethereum",
+    "defi",
+    "web3",
+    "hardhat",
+    "solidity"
+  ],
+  "author": "Nibert Investments LLC",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.2.3",
+    "@nomiclabs/hardhat-waffle": "^2.0.6",
+    "chai": "^4.5.0",
+    "dotenv": "^17.2.1",
+    "ethereum-waffle": "^4.0.10",
+    "ethers": "^5.8.0",
+    "hardhat": "^2.26.3"
+  }
 }
