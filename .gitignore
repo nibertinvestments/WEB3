@@ -47,3 +47,8 @@ lerna-debug.log*
 # OS
 .DS_Store
 Thumbs.db
+
+# Foundry build artifacts  
+out/
+cache/
+lib/
