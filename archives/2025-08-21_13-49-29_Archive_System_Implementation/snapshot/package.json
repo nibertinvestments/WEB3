@@ -1,0 +1,13 @@
+{
+  "name": "web3",
+  "version": "1.0.0",
+  "description": "This is the repository for all of Nibert Investmenst Web3 products",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

@@ -5,7 +5,11 @@
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "archive:create": "node archives/utilities/create_archive.js",
+    "archive:validate": "node archives/utilities/validate_archive.js validate",
+    "archive:list": "node archives/utilities/validate_archive.js list",
+    "archive:info": "node archives/utilities/validate_archive.js info"
   },
   "keywords": [],
   "author": "",
