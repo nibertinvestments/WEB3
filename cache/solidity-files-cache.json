@@ -1,0 +1,374 @@
+{
+  "_format": "hh-sol-cache-2",
+  "files": {
+    "/home/runner/work/WEB3/WEB3/contracts/core/MultiSigWallet.sol": {
+      "lastModificationDate": 1755807028880,
+      "contentHash": "423e93c241b617d9434deb74206378bb",
+      "sourceName": "contracts/core/MultiSigWallet.sol",
+      "solcConfig": {
+        "version": "0.8.19",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.19"
+      ],
+      "artifacts": [
+        "MultiSigWallet"
+      ]
+    },
+    "/home/runner/work/WEB3/WEB3/contracts/core/PriceOracle.sol": {
+      "lastModificationDate": 1755807028880,
+      "contentHash": "0314673c15de1755fa8811c97cb7cd85",
+      "sourceName": "contracts/core/PriceOracle.sol",
+      "solcConfig": {
+        "version": "0.8.19",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.19"
+      ],
+      "artifacts": [
+        "PriceOracle"
+      ]
+    },
+    "/home/runner/work/WEB3/WEB3/contracts/core/VestingContract.sol": {
+      "lastModificationDate": 1755807028880,
+      "contentHash": "379de26034df5bc68ae31b4d85c5360f",
+      "sourceName": "contracts/core/VestingContract.sol",
+      "solcConfig": {
+        "version": "0.8.19",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.19"
+      ],
+      "artifacts": [
+        "IERC20Vesting",
+        "VestingContract"
+      ]
+    },
+    "/home/runner/work/WEB3/WEB3/contracts/defi/InsurancePool.sol": {
+      "lastModificationDate": 1755807028880,
+      "contentHash": "117bef2cd4ac00a1705c7b16e544d0e0",
+      "sourceName": "contracts/defi/InsurancePool.sol",
+      "solcConfig": {
+        "version": "0.8.19",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.19"
+      ],
+      "artifacts": [
+        "IERC20Insurance",
+        "InsurancePool"
+      ]
+    },
+    "/home/runner/work/WEB3/WEB3/contracts/defi/LiquidityPool.sol": {
+      "lastModificationDate": 1755807028880,
+      "contentHash": "b0ec3d992e2d29c7098798352b903aa9",
+      "sourceName": "contracts/defi/LiquidityPool.sol",
+      "solcConfig": {
+        "version": "0.8.19",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.19"
+      ],
+      "artifacts": [
+        "IERC20Simple",
+        "LiquidityPool"
+      ]
+    },
+    "/home/runner/work/WEB3/WEB3/contracts/defi/StakingRewards.sol": {
+      "lastModificationDate": 1755807028881,
+      "contentHash": "555013aebd352b315292f2e7653796d5",
+      "sourceName": "contracts/defi/StakingRewards.sol",
+      "solcConfig": {
+        "version": "0.8.19",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.19"
+      ],
+      "artifacts": [
+        "IERC20Staking",
+        "StakingRewards"
+      ]
+    },
+    "/home/runner/work/WEB3/WEB3/contracts/defi/YieldFarm.sol": {
+      "lastModificationDate": 1755807028881,
+      "contentHash": "c98475e28f8c9bb2777d95dbd2c4246c",
+      "sourceName": "contracts/defi/YieldFarm.sol",
+      "solcConfig": {
+        "version": "0.8.19",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.19"
+      ],
+      "artifacts": [
+        "IERC20Farm",
+        "YieldFarm"
+      ]
+    },
+    "/home/runner/work/WEB3/WEB3/contracts/governance/NibertDAO.sol": {
+      "lastModificationDate": 1755807028881,
+      "contentHash": "3be190400c26ebd0cfa78221db19089b",
+      "sourceName": "contracts/governance/NibertDAO.sol",
+      "solcConfig": {
+        "version": "0.8.19",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.19"
+      ],
+      "artifacts": [
+        "IGovernanceToken",
+        "NibertDAO"
+      ]
+    },
+    "/home/runner/work/WEB3/WEB3/contracts/tokens/NFTMarketplace.sol": {
+      "lastModificationDate": 1755807028881,
+      "contentHash": "c92653d5332daf91f377c527bf104f4d",
+      "sourceName": "contracts/tokens/NFTMarketplace.sol",
+      "solcConfig": {
+        "version": "0.8.19",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.19"
+      ],
+      "artifacts": [
+        "IERC20NFT",
+        "IERC721",
+        "NFTMarketplace"
+      ]
+    },
+    "/home/runner/work/WEB3/WEB3/contracts/tokens/NibertToken.sol": {
+      "lastModificationDate": 1755807028881,
+      "contentHash": "a5147d2127db8b56b52eb6af813e4b36",
+      "sourceName": "contracts/tokens/NibertToken.sol",
+      "solcConfig": {
+        "version": "0.8.19",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "viaIR": true,
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.19"
+      ],
+      "artifacts": [
+        "IERC20",
+        "NibertToken"
+      ]
+    }
+  }
+}
