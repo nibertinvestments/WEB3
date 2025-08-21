@@ -76,14 +76,7 @@ WEB3/
 │   └── 📄 README.md                # Detailed contract documentation
 ├── 📁 .github/                     # GitHub Actions & Copilot Instructions
 │   ├── 📁 workflows/               # CI/CD pipelines
-│   │   ├── daily-backup.yml        # 🔄 Automated daily backup system
-│   │   ├── node.js.yml            # Node.js CI pipeline
-│   │   └── python-publish.yml     # Python publishing workflow
 │   └── 📄 copilot-instructions.md  # Comprehensive development guide
-├── 📁 docs/                        # 📚 Documentation
-│   └── 📄 BACKUP_SYSTEM.md         # 🔄 Complete backup and recovery guide
-├── 📁 scripts/                     # 🛠️ Utility scripts
-│   └── 📄 backup-manager.sh        # 🔄 Local backup management tool
 └── 📄 package.json                 # Node.js configuration
 ```
 
@@ -255,7 +248,6 @@ python3 main.py             # Analytics engine
 - **🔧 API Reference**: Inline documentation in source files
 - **🎯 Use Case Examples**: Practical implementation guides
 - **⚡ Quick Reference**: Command cheat sheets
-- **🔄 Backup System**: `/docs/BACKUP_SYSTEM.md` - Complete backup and recovery guide
 
 ---
 
