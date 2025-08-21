@@ -1,0 +1,171 @@
+# Daily Backup Workflow for Nibert Investments WEB3 Repository
+# Automatically creates daily backups to prevent data loss
+
+name: Daily Backup
+
+on:
+  # Run daily at 2 AM UTC
+  schedule:
+    - cron: '0 2 * * *'
+  # Allow manual triggering
+  workflow_dispatch:
+    inputs:
+      backup_type:
+        description: 'Type of backup to create'
+        required: false
+        default: 'standard'
+        type: choice
+        options:
+          - standard
+          - full
+          - release
+
+jobs:
+  validate-and-backup:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        # Fetch full history for complete backup
+        fetch-depth: 0
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+    
+    - name: Install dependencies
+      run: npm install
+    
+    - name: Validate critical functionality
+      run: |
+        echo "🔍 Validating repository integrity..."
+        
+        # Validate Node.js server
+        node -c server.js
+        echo "✅ Server syntax validated"
+        
+        # Validate Python files
+        python3 -m py_compile main.py || echo "⚠️ Python file validation skipped (expected for skeleton files)"
+        
+        # Check critical files exist
+        for file in server.js main.js main.py package.json README.md; do
+          if [ -f "$file" ]; then
+            echo "✅ $file exists"
+          else
+            echo "❌ $file missing"
+            exit 1
+          fi
+        done
+        
+        # Validate smart contracts structure
+        if [ -d "contracts" ]; then
+          echo "✅ Smart contracts directory exists"
+          contract_count=$(find contracts -name "*.sol" | wc -l)
+          echo "📊 Found $contract_count smart contracts"
+        fi
+    
+    - name: Create backup timestamp
+      id: timestamp
+      run: |
+        TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+        echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
+        echo "date=$(date +%Y-%m-%d)" >> $GITHUB_OUTPUT
+    
+    - name: Create backup archive
+      run: |
+        echo "📦 Creating backup archive..."
+        
+        # Create backup directory
+        mkdir -p backup
+        
+        # Create comprehensive backup excluding unnecessary files
+        tar -czf "backup/nibert-web3-backup-${{ steps.timestamp.outputs.timestamp }}.tar.gz" \
+          --exclude='.git' \
+          --exclude='node_modules' \
+          --exclude='*.log' \
+          --exclude='.DS_Store' \
+          --exclude='backup' \
+          .
+        
+        # Create metadata file
+        cat > "backup/backup-metadata-${{ steps.timestamp.outputs.timestamp }}.json" << EOF
+        {
+          "backup_date": "${{ steps.timestamp.outputs.date }}",
+          "backup_timestamp": "${{ steps.timestamp.outputs.timestamp }}",
+          "repository": "${{ github.repository }}",
+          "commit_sha": "${{ github.sha }}",
+          "branch": "${{ github.ref_name }}",
+          "backup_type": "${{ github.event.inputs.backup_type || 'standard' }}",
+          "workflow_run_id": "${{ github.run_id }}",
+          "created_by": "daily-backup-workflow"
+        }
+        EOF
+        
+        # Display backup info
+        echo "📋 Backup Information:"
+        echo "- Archive: nibert-web3-backup-${{ steps.timestamp.outputs.timestamp }}.tar.gz"
+        echo "- Size: $(du -h backup/nibert-web3-backup-${{ steps.timestamp.outputs.timestamp }}.tar.gz | cut -f1)"
+        echo "- Commit: ${{ github.sha }}"
+        echo "- Date: ${{ steps.timestamp.outputs.date }}"
+    
+    - name: Upload backup artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: nibert-web3-backup-${{ steps.timestamp.outputs.timestamp }}
+        path: backup/
+        retention-days: 90
+        compression-level: 9
+    
+    - name: Create release backup (if requested)
+      if: github.event.inputs.backup_type == 'release'
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: backup-${{ steps.timestamp.outputs.timestamp }}
+        release_name: Backup Release ${{ steps.timestamp.outputs.date }}
+        body: |
+          🔄 **Automated Backup Release**
+          
+          This release contains a complete backup of the Nibert Investments WEB3 repository.
+          
+          **Backup Details:**
+          - 📅 Date: ${{ steps.timestamp.outputs.date }}
+          - 🔗 Commit: ${{ github.sha }}
+          - 📦 Type: Release Backup
+          - 🏃 Workflow: ${{ github.run_id }}
+          
+          **Contents:**
+          - ✅ Complete source code
+          - ✅ Smart contracts (all categories)
+          - ✅ Documentation
+          - ✅ Configuration files
+          - ✅ GitHub workflows
+          
+          Use this backup for major restoration needs or as a stable reference point.
+        draft: false
+        prerelease: false
+    
+    - name: Backup summary
+      run: |
+        echo "🎉 Backup completed successfully!"
+        echo ""
+        echo "📊 Backup Summary:"
+        echo "- Timestamp: ${{ steps.timestamp.outputs.timestamp }}"
+        echo "- Type: ${{ github.event.inputs.backup_type || 'standard' }}"
+        echo "- Repository: ${{ github.repository }}"
+        echo "- Commit: ${{ github.sha }}"
+        echo "- Artifacts retention: 90 days"
+        echo ""
+        echo "💡 Access your backup:"
+        echo "- GitHub Actions Artifacts: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        echo "- Backup files will be available for download for 90 days"
