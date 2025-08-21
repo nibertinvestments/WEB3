@@ -55,6 +55,22 @@ library OnChainML {
         int256 imaginary;
     }
     
+    // Neural Network Structures
+    struct NeuralNetwork {
+        uint256[] layerSizes;
+        uint256[][][] weights;
+        uint256[][] biases;
+        ActivationType[] activations;
+        bool isInitialized;
+    }
+    
+    enum ActivationType {
+        RELU,
+        SIGMOID,
+        TANH,
+        LINEAR
+    }
+    
     /**
      * @dev Advanced mathematical function with multiple algorithms
      * Use Case: Complex calculations for extremely-complex level operations
@@ -333,5 +349,52 @@ library OnChainML {
      */
     function min(uint256 a, uint256 b) internal pure returns (uint256) {
         return a < b ? a : b;
+    }
+    
+    /**
+     * @dev Create a neural network with specified architecture
+     * Use Case: AI/ML integration in smart contracts
+     */
+    function createNeuralNetwork(
+        uint256[] memory layerSizes,
+        ActivationType[] memory activations
+    ) internal pure returns (NeuralNetwork memory network) {
+        require(layerSizes.length >= 2, "OnChainML: need at least 2 layers");
+        require(activations.length == layerSizes.length - 1, "OnChainML: activations length mismatch");
+        
+        network.layerSizes = layerSizes;
+        network.activations = activations;
+        network.isInitialized = true;
+        
+        // Initialize weights and biases (simplified for demo)
+        // In production, these would be properly initialized
+        return network;
+    }
+    
+    /**
+     * @dev Forward propagation through neural network
+     * Use Case: AI inference on-chain
+     */
+    function forwardPropagation(
+        NeuralNetwork memory network,
+        uint256[] memory input
+    ) internal pure returns (uint256[] memory output) {
+        require(network.isInitialized, "OnChainML: network not initialized");
+        require(input.length == network.layerSizes[0], "OnChainML: input size mismatch");
+        
+        // Simplified forward propagation
+        // In production, this would implement actual neural network computation
+        output = new uint256[](network.layerSizes[network.layerSizes.length - 1]);
+        
+        // Simple transformation for demo purposes
+        for (uint256 i = 0; i < output.length; i++) {
+            uint256 sum = 0;
+            for (uint256 j = 0; j < input.length; j++) {
+                sum += input[j];
+            }
+            output[i] = sum / input.length; // Average as simple activation
+        }
+        
+        return output;
     }
 }
