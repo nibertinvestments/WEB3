@@ -157,18 +157,12 @@ library ErrorHandler {
         bytes memory data,
         string memory operation
     ) internal returns (bool success, bytes memory result) {
-        try target.call(data) returns (bytes memory returnData) {
-            success = true;
-            result = returnData;
+        (success, result) = target.call(data);
+        
+        if (success) {
             emit ErrorRecovered(target, operation, block.timestamp);
-        } catch Error(string memory reason) {
-            success = false;
-            result = bytes(reason);
-            logError(Severity.ERROR, reason, target);
-        } catch (bytes memory lowLevelData) {
-            success = false;
-            result = lowLevelData;
-            logError(Severity.ERROR, "Low-level call failed", target);
+        } else {
+            logError(Severity.ERROR, "External call failed", target);
         }
     }
     
@@ -181,18 +175,24 @@ library ErrorHandler {
         function() internal returns (bool) fallbackOperation,
         string memory operationName
     ) internal returns (bool success) {
-        try primaryOperation() returns (bool result) {
-            return result;
-        } catch {
+        // Execute primary operation
+        bool primarySuccess = primaryOperation();
+        
+        if (primarySuccess) {
+            return true;
+        } else {
             logError(Severity.WARNING, 
                 string(abi.encodePacked("Primary operation failed: ", operationName)), 
                 address(this)
             );
             
-            try fallbackOperation() returns (bool fallbackResult) {
+            // Execute fallback operation
+            bool fallbackSuccess = fallbackOperation();
+            
+            if (fallbackSuccess) {
                 emit ErrorRecovered(address(this), operationName, block.timestamp);
-                return fallbackResult;
-            } catch {
+                return true;
+            } else {
                 logError(Severity.CRITICAL, 
                     string(abi.encodePacked("Fallback operation failed: ", operationName)), 
                     address(this)

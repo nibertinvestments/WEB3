@@ -169,11 +169,11 @@ library BytesUtils {
      */
     function hexCharToByte(bytes1 char) internal pure returns (uint8) {
         if (char >= '0' && char <= '9') {
-            return uint8(char) - uint8('0');
+            return uint8(char) - 48; // ASCII '0' = 48
         } else if (char >= 'a' && char <= 'f') {
-            return uint8(char) - uint8('a') + 10;
+            return uint8(char) - 87; // ASCII 'a' = 97, so 97 - 10 = 87
         } else if (char >= 'A' && char <= 'F') {
-            return uint8(char) - uint8('A') + 10;
+            return uint8(char) - 55; // ASCII 'A' = 65, so 65 - 10 = 55
         } else {
             revert("BytesUtils: invalid hex character");
         }
