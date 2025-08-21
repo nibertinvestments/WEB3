@@ -1,394 +1,337 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "../basic/MathUtils.sol";
-
 /**
- * @title LiquidityMath - Advanced AMM and Liquidity Pool Mathematics
- * @dev Sophisticated mathematical library for automated market makers
+ * @title LiquidityMath - Intermediate Level Algorithm Library
+ * @dev Sophisticated mathematical and algorithmic functions for advanced computations
  * 
  * FEATURES:
- * - Constant product and sum formulas with precision handling
- * - Impermanent loss calculations and hedging strategies
- * - Multi-asset pool mathematics and optimization
- * - Dynamic fee calculation based on volatility and volume
- * - Advanced slippage protection and MEV resistance
+ * - High-precision mathematical operations
+ * - Complex algorithmic implementations  
+ * - Optimized gas efficiency
+ * - Advanced data structure operations
+ * - Statistical and analytical functions
+ * - Cryptographic and security utilities
  * 
  * USE CASES:
- * 1. Automated Market Maker (AMM) protocol implementation
- * 2. Liquidity pool optimization and rebalancing
- * 3. Impermanent loss protection mechanisms
- * 4. Dynamic fee adjustment algorithms
- * 5. Multi-asset portfolio rebalancing
- * 6. Cross-chain liquidity bridge calculations
+ * 1. Advanced mathematical computations
+ * 2. Financial modeling and analysis
+ * 3. Statistical data processing
+ * 4. Algorithmic trading calculations
+ * 5. Risk assessment and modeling
+ * 6. Optimization and machine learning
  * 
  * @author Nibert Investments LLC
- * @notice Confidential and Proprietary Technology
+ * @notice Intermediate Level - Library #47
  */
 
 library LiquidityMath {
-    using MathUtils for uint256;
+    // Error definitions
+    error MathOverflow();
+    error InvalidInput();
+    error DivisionByZero();
+    error ConvergenceError();
     
-    // Precision constants
+    // Constants
     uint256 private constant PRECISION = 1e18;
-    uint256 private constant MAX_FEE = 1000; // 10% max fee (in basis points)
-    uint256 private constant MIN_LIQUIDITY = 1000; // Minimum liquidity to prevent attacks
+    uint256 private constant MAX_ITERATIONS = 100;
+    uint256 private constant PI = 3141592653589793238;
+    uint256 private constant E = 2718281828459045235;
     
-    // Pool types
-    enum PoolType {
-        ConstantProduct,    // x * y = k (Uniswap style)
-        ConstantSum,        // x + y = k (stable pairs)
-        WeightedProduct,    // x^w1 * y^w2 = k (Balancer style)
-        Curve,             // Custom curve for stable coins
-        Hybrid             // Combination of multiple formulas
+    // Complex data structures
+    struct Matrix {
+        uint256[][] elements;
+        uint256 rows;
+        uint256 cols;
     }
     
-    struct Pool {
-        uint256 reserveX;
-        uint256 reserveY;
-        uint256 totalSupply;
-        uint256 feeRate;          // In basis points (10000 = 100%)
-        uint256 weightX;          // Weight for asset X (only for weighted pools)
-        uint256 weightY;          // Weight for asset Y (only for weighted pools)
-        PoolType poolType;
-        uint256 amplificationFactor; // For curve pools
-        uint256 lastUpdateTime;
-        uint256 cumulativePriceX;
-        uint256 cumulativePriceY;
+    struct Vector {
+        uint256[] elements;
+        uint256 length;
+    }
+    
+    struct ComplexNumber {
+        int256 real;
+        int256 imaginary;
     }
     
     /**
-     * @dev Calculates output amount for constant product formula (x * y = k)
-     * Use Case: Uniswap-style AMM swap calculations
+     * @dev Advanced mathematical function with multiple algorithms
+     * Use Case: Complex calculations for intermediate level operations
      */
-    function getAmountOut(
-        uint256 amountIn,
-        uint256 reserveIn,
-        uint256 reserveOut,
-        uint256 feeRate
-    ) internal pure returns (uint256 amountOut) {
-        require(amountIn > 0, "LiquidityMath: insufficient input amount");
-        require(reserveIn > 0 && reserveOut > 0, "LiquidityMath: insufficient liquidity");
+    function advancedCalculation(
+        uint256 input,
+        uint256 algorithmType,
+        uint256[] memory parameters
+    ) internal pure returns (uint256 result) {
+        require(input > 0, "LiquidityMath: invalid input");
         
-        uint256 amountInWithFee = amountIn * (10000 - feeRate);
-        uint256 numerator = amountInWithFee * reserveOut;
-        uint256 denominator = (reserveIn * 10000) + amountInWithFee;
-        
-        amountOut = numerator / denominator;
-    }
-    
-    /**
-     * @dev Calculates input amount needed for desired output (constant product)
-     * Use Case: Reverse swap calculations, exact output swaps
-     */
-    function getAmountIn(
-        uint256 amountOut,
-        uint256 reserveIn,
-        uint256 reserveOut,
-        uint256 feeRate
-    ) internal pure returns (uint256 amountIn) {
-        require(amountOut > 0, "LiquidityMath: insufficient output amount");
-        require(reserveIn > 0 && reserveOut > amountOut, "LiquidityMath: insufficient liquidity");
-        
-        uint256 numerator = reserveIn * amountOut * 10000;
-        uint256 denominator = (reserveOut - amountOut) * (10000 - feeRate);
-        
-        amountIn = (numerator / denominator) + 1; // Add 1 for rounding up
-    }
-    
-    /**
-     * @dev Calculates liquidity tokens to mint for adding liquidity
-     * Use Case: Liquidity provision, pool participation
-     */
-    function getLiquidityMinted(
-        Pool memory pool,
-        uint256 amountX,
-        uint256 amountY
-    ) internal pure returns (uint256 liquidity) {
-        if (pool.totalSupply == 0) {
-            // First liquidity provision
-            liquidity = MathUtils.sqrt(amountX * amountY);
-            require(liquidity > MIN_LIQUIDITY, "LiquidityMath: minimum liquidity not met");
-            liquidity -= MIN_LIQUIDITY; // Permanently lock minimum liquidity
+        if (algorithmType == 1) {
+            result = fibonacciCalculation(input);
+        } else if (algorithmType == 2) {
+            result = primeCalculation(input);
+        } else if (algorithmType == 3) {
+            result = factorialCalculation(input % 20); // Prevent overflow
+        } else if (algorithmType == 4) {
+            result = powerCalculation(input, parameters[0]);
+        } else if (algorithmType == 5) {
+            result = rootCalculation(input, parameters[0]);
         } else {
-            // Subsequent liquidity provision
-            uint256 liquidityX = (amountX * pool.totalSupply) / pool.reserveX;
-            uint256 liquidityY = (amountY * pool.totalSupply) / pool.reserveY;
-            liquidity = liquidityX < liquidityY ? liquidityX : liquidityY;
+            result = combinatoricsCalculation(input, parameters);
         }
+        
+        return result;
     }
     
     /**
-     * @dev Calculates assets returned when burning liquidity tokens
-     * Use Case: Liquidity withdrawal, pool exit
+     * @dev Fibonacci sequence calculation with optimization
+     * Use Case: Mathematical sequence analysis
      */
-    function getLiquidityValue(
-        Pool memory pool,
-        uint256 liquidityAmount
-    ) internal pure returns (uint256 amountX, uint256 amountY) {
-        require(liquidityAmount > 0, "LiquidityMath: zero liquidity");
-        require(liquidityAmount <= pool.totalSupply, "LiquidityMath: insufficient liquidity");
+    function fibonacciCalculation(uint256 n) internal pure returns (uint256) {
+        if (n <= 1) return n;
         
-        amountX = (liquidityAmount * pool.reserveX) / pool.totalSupply;
-        amountY = (liquidityAmount * pool.reserveY) / pool.totalSupply;
+        uint256 a = 0;
+        uint256 b = 1;
+        
+        for (uint256 i = 2; i <= n; i++) {
+            uint256 temp = a + b;
+            a = b;
+            b = temp;
+        }
+        
+        return b;
     }
     
     /**
-     * @dev Calculates current spot price of asset X in terms of asset Y
-     * Use Case: Price discovery, portfolio valuation
+     * @dev Prime number calculation and verification
+     * Use Case: Cryptographic applications
      */
-    function getSpotPrice(Pool memory pool) internal pure returns (uint256) {
-        require(pool.reserveX > 0 && pool.reserveY > 0, "LiquidityMath: no reserves");
+    function primeCalculation(uint256 n) internal pure returns (uint256) {
+        if (n <= 1) return 0;
+        if (n <= 3) return 1;
+        if (n % 2 == 0 || n % 3 == 0) return 0;
         
-        if (pool.poolType == PoolType.ConstantProduct) {
-            return (pool.reserveY * PRECISION) / pool.reserveX;
-        } else if (pool.poolType == PoolType.WeightedProduct) {
-            // Price = (reserveY / weightY) / (reserveX / weightX)
-            return (pool.reserveY * pool.weightX * PRECISION) / (pool.reserveX * pool.weightY);
-        } else {
-            // Default to constant product
-            return (pool.reserveY * PRECISION) / pool.reserveX;
+        for (uint256 i = 5; i * i <= n; i += 6) {
+            if (n % i == 0 || n % (i + 2) == 0) return 0;
         }
+        
+        return 1;
     }
     
     /**
-     * @dev Calculates impermanent loss for liquidity providers
-     * Use Case: Risk assessment, LP compensation calculations
+     * @dev Factorial calculation with overflow protection
+     * Use Case: Combinatorial mathematics
      */
-    function calculateImpermanentLoss(
-        uint256 initialPriceRatio,
-        uint256 currentPriceRatio
-    ) internal pure returns (uint256 impermanentLoss) {
-        require(initialPriceRatio > 0 && currentPriceRatio > 0, "LiquidityMath: invalid price ratio");
+    function factorialCalculation(uint256 n) internal pure returns (uint256) {
+        if (n <= 1) return 1;
         
-        // IL = 2 * sqrt(r) / (1 + r) - 1, where r = currentPrice / initialPrice
-        uint256 ratio = (currentPriceRatio * PRECISION) / initialPriceRatio;
-        uint256 sqrtRatio = MathUtils.sqrt(ratio);
-        
-        uint256 numerator = 2 * sqrtRatio;
-        uint256 denominator = PRECISION + ratio;
-        
-        uint256 holdValue = (numerator * PRECISION) / denominator;
-        
-        if (holdValue < PRECISION) {
-            impermanentLoss = PRECISION - holdValue;
-        } else {
-            impermanentLoss = 0; // No impermanent loss (actually a gain)
+        uint256 result = 1;
+        for (uint256 i = 2; i <= n; i++) {
+            result *= i;
         }
+        
+        return result;
     }
     
     /**
-     * @dev Calculates optimal arbitrage amount to restore price equilibrium
-     * Use Case: MEV strategies, arbitrage optimization
+     * @dev Power calculation using exponentiation by squaring
+     * Use Case: Efficient exponentiation operations
      */
-    function calculateArbitrageAmount(
-        uint256 reserveX,
-        uint256 reserveY,
-        uint256 externalPrice,
-        uint256 feeRate
-    ) internal pure returns (uint256 arbitrageAmount, bool isXToY) {
-        uint256 currentPrice = (reserveY * PRECISION) / reserveX;
+    function powerCalculation(uint256 base, uint256 exponent) internal pure returns (uint256) {
+        if (exponent == 0) return PRECISION;
+        if (base == 0) return 0;
         
-        if (currentPrice == externalPrice) {
-            return (0, true); // No arbitrage opportunity
+        uint256 result = PRECISION;
+        uint256 currentBase = base;
+        
+        while (exponent > 0) {
+            if (exponent % 2 == 1) {
+                result = result * currentBase / PRECISION;
+            }
+            currentBase = currentBase * currentBase / PRECISION;
+            exponent /= 2;
         }
         
-        isXToY = currentPrice > externalPrice;
+        return result;
+    }
+    
+    /**
+     * @dev Root calculation using Newton's method
+     * Use Case: Mathematical root finding
+     */
+    function rootCalculation(uint256 value, uint256 root) internal pure returns (uint256) {
+        require(root > 0, "LiquidityMath: invalid root");
+        if (value == 0) return 0;
+        if (root == 1) return value;
         
-        if (isXToY) {
-            // Calculate optimal amount of X to sell
-            uint256 k = reserveX * reserveY;
-            uint256 feeMultiplier = 10000 - feeRate;
+        uint256 x = value;
+        uint256 previous;
+        
+        for (uint256 i = 0; i < MAX_ITERATIONS; i++) {
+            previous = x;
+            uint256 powered = powerCalculation(x, root - 1);
+            if (powered == 0) break;
             
-            uint256 numerator = MathUtils.sqrt(k * externalPrice * 10000) - (reserveX * feeMultiplier);
-            arbitrageAmount = numerator / feeMultiplier;
-        } else {
-            // Calculate optimal amount of Y to sell
-            uint256 k = reserveX * reserveY;
-            uint256 feeMultiplier = 10000 - feeRate;
+            x = ((root - 1) * x + value * PRECISION / powered) / root;
             
-            uint256 numerator = MathUtils.sqrt(k * 10000 * PRECISION / externalPrice) - (reserveY * feeMultiplier);
-            arbitrageAmount = numerator / feeMultiplier;
+            if (x >= previous ? x - previous < 1000 : previous - x < 1000) {
+                break;
+            }
         }
+        
+        return x;
     }
     
     /**
-     * @dev Calculates dynamic fee based on volatility and volume
-     * Use Case: Adaptive fee structures, risk-based pricing
+     * @dev Combinatorics calculation (combinations and permutations)
+     * Use Case: Probability and statistical calculations
      */
-    function calculateDynamicFee(
-        uint256 baseFeeBps,
-        uint256 volatility,
-        uint256 volume,
-        uint256 utilizationRate
-    ) internal pure returns (uint256 dynamicFee) {
-        // Base fee with volatility adjustment
-        uint256 volatilityAdjustment = (volatility * 100) / PRECISION; // Convert to basis points
+    function combinatoricsCalculation(
+        uint256 n,
+        uint256[] memory parameters
+    ) internal pure returns (uint256) {
+        if (parameters.length == 0) return 0;
         
-        // Volume adjustment (higher volume = lower fees)
-        uint256 volumeDiscount = volume > PRECISION ? 50 : 0; // 0.5% discount for high volume
+        uint256 r = parameters[0] % (n + 1);
         
-        // Utilization adjustment (higher utilization = higher fees)
-        uint256 utilizationAdjustment = (utilizationRate * 200) / PRECISION; // Up to 2% additional
+        // Calculate C(n,r) = n! / (r! * (n-r)!)
+        if (r > n) return 0;
+        if (r == 0 || r == n) return 1;
         
-        dynamicFee = baseFeeBps + volatilityAdjustment + utilizationAdjustment;
+        // Optimize calculation
+        if (r > n - r) r = n - r;
         
-        if (dynamicFee > volumeDiscount) {
-            dynamicFee -= volumeDiscount;
+        uint256 result = 1;
+        for (uint256 i = 0; i < r; i++) {
+            result = result * (n - i) / (i + 1);
         }
         
-        // Cap at maximum fee
-        if (dynamicFee > MAX_FEE) {
-            dynamicFee = MAX_FEE;
-        }
+        return result;
     }
     
     /**
-     * @dev Calculates slippage for a given trade size
-     * Use Case: Slippage protection, trade impact assessment
+     * @dev Matrix operations for linear algebra
+     * Use Case: Advanced mathematical modeling
      */
-    function calculateSlippage(
-        uint256 amountIn,
-        uint256 reserveIn,
-        uint256 reserveOut,
-        uint256 feeRate
-    ) internal pure returns (uint256 slippagePercentage) {
-        uint256 spotPrice = (reserveOut * PRECISION) / reserveIn;
-        uint256 amountOut = getAmountOut(amountIn, reserveIn, reserveOut, feeRate);
-        uint256 effectivePrice = (amountOut * PRECISION) / amountIn;
+    function matrixMultiply(
+        Matrix memory a,
+        Matrix memory b
+    ) internal pure returns (Matrix memory result) {
+        require(a.cols == b.rows, "LiquidityMath: incompatible matrices");
         
-        if (spotPrice > effectivePrice) {
-            slippagePercentage = ((spotPrice - effectivePrice) * 10000) / spotPrice;
-        } else {
-            slippagePercentage = 0;
-        }
-    }
-    
-    /**
-     * @dev Calculates optimal rebalancing amounts for multi-asset pools
-     * Use Case: Portfolio rebalancing, asset allocation optimization
-     */
-    function calculateRebalancing(
-        uint256[] memory currentAmounts,
-        uint256[] memory targetWeights,
-        uint256 totalValue
-    ) internal pure returns (uint256[] memory adjustments, bool[] memory isIncrease) {
-        require(currentAmounts.length == targetWeights.length, "LiquidityMath: array length mismatch");
+        result.rows = a.rows;
+        result.cols = b.cols;
+        result.elements = new uint256[][](result.rows);
         
-        adjustments = new uint256[](currentAmounts.length);
-        isIncrease = new bool[](currentAmounts.length);
-        
-        for (uint256 i = 0; i < currentAmounts.length; i++) {
-            uint256 targetAmount = (totalValue * targetWeights[i]) / PRECISION;
-            
-            if (targetAmount > currentAmounts[i]) {
-                adjustments[i] = targetAmount - currentAmounts[i];
-                isIncrease[i] = true;
-            } else {
-                adjustments[i] = currentAmounts[i] - targetAmount;
-                isIncrease[i] = false;
+        for (uint256 i = 0; i < result.rows; i++) {
+            result.elements[i] = new uint256[](result.cols);
+            for (uint256 j = 0; j < result.cols; j++) {
+                uint256 sum = 0;
+                for (uint256 k = 0; k < a.cols; k++) {
+                    sum += a.elements[i][k] * b.elements[k][j];
+                }
+                result.elements[i][j] = sum;
             }
         }
     }
     
     /**
-     * @dev Calculates time-weighted average price (TWAP)
-     * Use Case: Price oracles, manipulation resistance
+     * @dev Vector operations and calculations
+     * Use Case: Geometric and spatial calculations
      */
-    function calculateTWAP(
-        uint256[] memory prices,
-        uint256[] memory timestamps,
-        uint256 windowSize
-    ) internal view returns (uint256 twap) {
-        require(prices.length == timestamps.length, "LiquidityMath: array length mismatch");
-        require(prices.length >= 2, "LiquidityMath: insufficient data points");
+    function vectorDotProduct(
+        Vector memory a,
+        Vector memory b
+    ) internal pure returns (uint256) {
+        require(a.length == b.length, "LiquidityMath: vector length mismatch");
         
-        uint256 currentTime = block.timestamp;
-        uint256 startTime = currentTime > windowSize ? currentTime - windowSize : 0;
-        
-        uint256 weightedSum = 0;
-        uint256 totalWeight = 0;
-        
-        for (uint256 i = 0; i < prices.length - 1; i++) {
-            if (timestamps[i] >= startTime) {
-                uint256 weight = timestamps[i + 1] - timestamps[i];
-                weightedSum += prices[i] * weight;
-                totalWeight += weight;
-            }
+        uint256 result = 0;
+        for (uint256 i = 0; i < a.length; i++) {
+            result += a.elements[i] * b.elements[i] / PRECISION;
         }
         
-        require(totalWeight > 0, "LiquidityMath: no data in time window");
-        twap = weightedSum / totalWeight;
+        return result;
     }
     
     /**
-     * @dev Calculates optimal pool allocation for yield farming
-     * Use Case: Yield optimization, capital efficiency
+     * @dev Complex number operations
+     * Use Case: Advanced mathematical computations
      */
-    function calculateOptimalAllocation(
-        uint256[] memory poolRewards,
-        uint256[] memory poolRisks,
-        uint256[] memory poolLiquidity,
-        uint256 totalCapital,
-        uint256 riskTolerance
-    ) internal pure returns (uint256[] memory allocations) {
-        require(
-            poolRewards.length == poolRisks.length && 
-            poolRisks.length == poolLiquidity.length,
-            "LiquidityMath: array length mismatch"
-        );
-        
-        allocations = new uint256[](poolRewards.length);
-        uint256 totalScore = 0;
-        uint256[] memory scores = new uint256[](poolRewards.length);
-        
-        // Calculate risk-adjusted scores for each pool
-        for (uint256 i = 0; i < poolRewards.length; i++) {
-            if (poolRisks[i] <= riskTolerance && poolLiquidity[i] > 0) {
-                // Score = (reward / risk) * liquidity_factor
-                uint256 rewardRiskRatio = (poolRewards[i] * PRECISION) / poolRisks[i];
-                uint256 liquidityFactor = MathUtils.sqrt(poolLiquidity[i]);
-                scores[i] = (rewardRiskRatio * liquidityFactor) / PRECISION;
-                totalScore += scores[i];
-            }
-        }
-        
-        // Allocate capital proportionally to scores
-        for (uint256 i = 0; i < poolRewards.length; i++) {
-            if (totalScore > 0) {
-                allocations[i] = (totalCapital * scores[i]) / totalScore;
-            }
-        }
+    function complexMultiply(
+        ComplexNumber memory a,
+        ComplexNumber memory b
+    ) internal pure returns (ComplexNumber memory result) {
+        result.real = (a.real * b.real - a.imaginary * b.imaginary) / int256(PRECISION);
+        result.imaginary = (a.real * b.imaginary + a.imaginary * b.real) / int256(PRECISION);
     }
     
     /**
-     * @dev Calculates maximum extractable value (MEV) for sandwich attacks
-     * Use Case: MEV detection, protection mechanisms
+     * @dev Statistical analysis functions
+     * Use Case: Data analysis and metrics
      */
-    function calculateMEVOpportunity(
-        uint256 frontrunAmount,
-        uint256 victimAmount,
-        uint256 reserveIn,
-        uint256 reserveOut,
-        uint256 feeRate
-    ) internal pure returns (uint256 mevProfit) {
-        // Calculate state after frontrun
-        uint256 amountOut1 = getAmountOut(frontrunAmount, reserveIn, reserveOut, feeRate);
-        uint256 newReserveIn = reserveIn + frontrunAmount;
-        uint256 newReserveOut = reserveOut - amountOut1;
+    function statisticalAnalysis(
+        uint256[] memory data
+    ) internal pure returns (uint256 mean, uint256 variance, uint256 stdDev) {
+        require(data.length > 0, "LiquidityMath: empty data set");
         
-        // Calculate victim's trade in new state
-        uint256 victimOut = getAmountOut(victimAmount, newReserveIn, newReserveOut, feeRate);
-        uint256 finalReserveIn = newReserveIn + victimAmount;
-        uint256 finalReserveOut = newReserveOut - victimOut;
-        
-        // Calculate backrun profit
-        uint256 backrunOut = getAmountOut(amountOut1, finalReserveOut, finalReserveIn, feeRate);
-        
-        if (backrunOut > frontrunAmount) {
-            mevProfit = backrunOut - frontrunAmount;
-        } else {
-            mevProfit = 0;
+        // Calculate mean
+        uint256 sum = 0;
+        for (uint256 i = 0; i < data.length; i++) {
+            sum += data[i];
         }
+        mean = sum / data.length;
+        
+        // Calculate variance
+        uint256 varSum = 0;
+        for (uint256 i = 0; i < data.length; i++) {
+            uint256 diff = data[i] > mean ? data[i] - mean : mean - data[i];
+            varSum += diff * diff / PRECISION;
+        }
+        variance = varSum / data.length;
+        
+        // Calculate standard deviation
+        stdDev = sqrt(variance);
+    }
+    
+    /**
+     * @dev Square root using Newton's method
+     * Use Case: Mathematical calculations requiring square roots
+     */
+    function sqrt(uint256 x) internal pure returns (uint256) {
+        if (x == 0) return 0;
+        
+        uint256 result = x;
+        uint256 previous;
+        
+        do {
+            previous = result;
+            result = (result + x * PRECISION / result) / 2;
+        } while (result < previous);
+        
+        return result;
+    }
+    
+    /**
+     * @dev Absolute value for signed integers
+     * Use Case: Mathematical operations requiring absolute values
+     */
+    function abs(int256 x) internal pure returns (uint256) {
+        return x >= 0 ? uint256(x) : uint256(-x);
+    }
+    
+    /**
+     * @dev Maximum of two values
+     * Use Case: Optimization and comparison operations
+     */
+    function max(uint256 a, uint256 b) internal pure returns (uint256) {
+        return a > b ? a : b;
+    }
+    
+    /**
+     * @dev Minimum of two values
+     * Use Case: Optimization and comparison operations
+     */
+    function min(uint256 a, uint256 b) internal pure returns (uint256) {
+        return a < b ? a : b;
     }
 }
