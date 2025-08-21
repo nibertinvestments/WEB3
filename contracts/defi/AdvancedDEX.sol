@@ -353,7 +353,9 @@ contract AdvancedDEX {
         PoolInfo storage pool = pools[poolId];
         
         // Calculate swap output using advanced pricing curve
-        (amountOut, uint256 priceImpact, uint256 swapFee) = calculateSwapOutput(
+        uint256 priceImpact;
+        uint256 swapFee;
+        (amountOut, priceImpact, swapFee) = calculateSwapOutput(
             pool,
             tokenIn,
             tokenOut,
