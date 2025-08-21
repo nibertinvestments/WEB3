@@ -47,3 +47,9 @@ lerna-debug.log*
 # OS
 .DS_Store
 Thumbs.db
+
+# Backup files (local backups should not be committed)
+backups/
+*.backup
+*-backup-*.tar.gz
+current-state-backup-*.tar.gz
