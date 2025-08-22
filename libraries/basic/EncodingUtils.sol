@@ -119,9 +119,9 @@ library EncodingUtils {
      * Use Case: Helper for Base64 decoding
      */
     function base64CharToValue(bytes1 char) internal pure returns (uint256) {
-        if (char >= "A" && char <= "Z") return uint8(char) - uint8("A");
-        if (char >= "a" && char <= "z") return uint8(char) - uint8("a") + 26;
-        if (char >= "0" && char <= "9") return uint8(char) - uint8("0") + 52;
+        if (char >= "A" && char <= "Z") return uint8(char) - 65; // ASCII 'A' = 65
+        if (char >= "a" && char <= "z") return uint8(char) - 71; // ASCII 'a' = 97, so 97 - 26 = 71
+        if (char >= "0" && char <= "9") return uint8(char) + 4;  // ASCII '0' = 48, so 48 + 4 = 52
         if (char == "+") return 62;
         if (char == "/") return 63;
         revert InvalidBase64();

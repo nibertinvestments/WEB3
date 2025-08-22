@@ -133,7 +133,7 @@ library AddressUtils {
         address[] memory owners,
         uint256 threshold,
         bytes32 salt
-    ) internal pure returns (address) {
+    ) internal view returns (address) {
         require(owners.length > 0, "AddressUtils: no owners");
         require(threshold > 0 && threshold <= owners.length, "AddressUtils: invalid threshold");
         
